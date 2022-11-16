@@ -1305,14 +1305,14 @@ def gen_characteristics(
 
 if __name__ == "__main__":
     # Read in external file inputs
-    outstanding_stock, mspd_date = read_mspd("input_data/mspd/MSPD_Mar2022.xls")
-    soma, soma_date = read_soma("input_data/soma/SOMA_Mar302022.csv")
+    outstanding_stock, mspd_date = read_mspd("MSPD_SumSecty_20221031_20221031.csv")
+    soma, soma_date = read_soma("details.csv")
     gross_iss = read_issuance("input_data/discretionary_assumptions.xlsx")
     funding_need_fy, qe_purchases, soma_runoff_caps = read_disc_assumptions(
-        "input_data/discretionary_assumptions.xlsx", gross_iss["Date"]
+        "input_data/discretionary_assumptions.xlsx", gross_iss["10/15/22"]
     )
     inflation_spots, fwd_curve, monthly_budget_dist = read_third_party_inputs(
-        "input_data/market_data.xlsx", mspd_date, gross_iss["Date"].iat[-1]
+        "input_data/market_data.xlsx", mspd_date, gross_iss["10/15/22"].iat[-1]
     )
 
     # If MSPD publication date is not a business day, throw a warning about potentially unsettled issuance
@@ -1326,13 +1326,13 @@ if __name__ == "__main__":
 
     # Remove rows from gross issuance table that are before jump-off date, using MSPD date as the jump-off point
     for index, r in gross_iss.iterrows():
-        if r["Date"].date() < mspd_date:
+        if r["10/15/22"].date() < mspd_date:
             gross_iss.drop(index, inplace=True)
     gross_iss.reset_index(inplace=True, drop=True)
 
     # Distribute FY funding need assumptions across months based on seasonal distribution history
     funding_need_monthly = gen_monthly_borrowing(
-        funding_need_fy, gross_iss["Date"], monthly_budget_dist
+        funding_need_fy, gross_iss["10/15/22"], monthly_budget_dist
     )
 
     # Calculate monthly inflation adjustments used to scale TIPS from inflation spot rate inputs
